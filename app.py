@@ -2,9 +2,10 @@ import tkinter as tk
 from PIL import Image, ImageTk, ImageOps
 
 class SlideShow():
-    def __init__(self, window_title):
+    def __init__(self, album_name, images_data):
         self.root = tk.Tk()
-        self.root.title(window_title)
+        self.root.title(album_name)
+        self.data = images_data#TODO Implement
         self.root.minsize(700, 700)
         self.root.maxsize(900, 900)
         self.root.geometry("700x700+25+50")
