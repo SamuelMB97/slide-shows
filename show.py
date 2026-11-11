@@ -23,6 +23,7 @@ def main():
             if entry.name.upper().endswith(("JPG", "JPEG", "PNG", "GIF")):
                 print(f"{entry.name} is an image!")
                 img_info = {
+                    "image_path": os.path.relpath(entry.path),
                     "file_name": entry.name,
                     "caption": None,
                     "credit": None,

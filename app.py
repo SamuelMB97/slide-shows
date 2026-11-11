@@ -1,5 +1,6 @@
 import tkinter as tk
 from PIL import Image, ImageTk, ImageOps
+import os
 
 class SlideShow():
     def __init__(self, album_name, images_data):
@@ -9,11 +10,14 @@ class SlideShow():
         self.root.maxsize(900, 900)
         self.root.geometry("700x700+25+50")
         self.root.configure(bg='darkgray')
-        self.data = images_data#TODO Implement
+        self.data = images_data
 
         for img_data in self.data:
+            if not img_data.get("image_path"):
+                img_data["image_path"] = os.path.relpath(img_data["file_name"])
+
             img_data["image"] = ImageTk.PhotoImage(
-                    self.autosize_img(img_data["file_name"])
+                    self.autosize_img(img_data["image_path"])
                     )
             
         self.img_idx = 0
