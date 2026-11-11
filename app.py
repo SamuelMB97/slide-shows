@@ -82,7 +82,7 @@ class SlideShow():
         self.buttons_frame.pack(anchor="s")
 
 
-    def prep_img(self, file):
+    def prep_img(self, file):# TODO Fix the auto-sizing
         img = Image.open(file)
         return ImageOps.contain(img, (700, 700))
 
