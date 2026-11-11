@@ -1,6 +1,5 @@
 import sys
 from app import SlideShow
-# TODO use pillow for opening jpeg, converting them to tkimage objects
 
 IMG_EXTENSIONS = ("JPG", "JPEG", "PNG", "GIF")
 

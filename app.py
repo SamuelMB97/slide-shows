@@ -19,7 +19,7 @@ class SlideShow():
         music = r"pics\man-enjoying-music-2214037"
         bear = r"pics\grizzlyBear.jpg"
         
-        init_img = bear
+        init_img = thumbs
         self.image = ImageTk.PhotoImage(self.prep_img(init_img))
 
         self.image_label = tk.Label(
@@ -29,6 +29,20 @@ class SlideShow():
         self.image_label.place(relx=0.5, rely=0.5, anchor="center")
 
         self.image_frame.pack(expand=True, fill="both")
+
+
+        self.img_data_frame = tk.Frame(
+            self.root,
+            background="blue")
+
+        self.img_data_label = tk.Label(
+            self.img_data_frame,
+            background="gray11",
+            foreground="white",
+            text="Image File Name\ncaption\ncredit\nalt\nkeywords")
+        self.img_data_label.pack(expand=True, fill="both")
+        
+        self.img_data_frame.pack(anchor="s", fill="x")
 
 
         self.buttons_frame = tk.Frame(
