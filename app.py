@@ -11,14 +11,7 @@ class SlideShow():
         self.root.geometry("700x700+25+50")
         self.root.configure(bg='darkgray')
         self.data = images_data
-
-        for img_data in self.data:
-            if not img_data.get("image_path"):
-                img_data["image_path"] = os.path.relpath(img_data["file_name"])
-
-            img_data["image"] = ImageTk.PhotoImage(
-                    self.autosize_img(img_data["image_path"])
-                    )
+        self.load_images()
             
         self.img_idx = 0
 
@@ -48,7 +41,7 @@ class SlideShow():
         self.img_data_label.pack(expand=True, fill="both")
         
         self.img_data_frame.pack(anchor="s", fill="x")
-        self.configure_img_data(self.data[self.img_idx])
+        self.set_img(self.data[self.img_idx])
 
 
         self.buttons_frame = tk.Frame(
@@ -87,27 +80,45 @@ class SlideShow():
 
         self.buttons_frame.pack(anchor="s")
 
-    def configure_img_data(self, info:dict):
-        img_data = []
-        img_data.append(info.get("file_name"))
-        for key in ["caption", "credit", "alt", "keywords"]:
-            value = info.get(key)
-            if value:
-                img_data.append(f"{key}: {value}")
+    def load_images(self):
+        for img_data in self.data:
+            if not img_data.get("image_path"):
+                img_data["image_path"] = os.path.relpath(img_data["file_name"])
 
-        print(img_data)
-        label_text = "\n".join(img_data)
-        print(f"{label_text=}")
+            #Create tkinter Image
+            img_data["image"] = ImageTk.PhotoImage(
+                    self.scale_img(img_data["image_path"])
+                    )
 
-        self.img_data_label.config(text=label_text, )
+            #Format image data for label
+            label_info = []
+            label_info.append(img_data.get("file_name"))
+            for key in ["caption", "credit", "alt", "keywords"]:
+                value = img_data.get(key)
+                if value:
+                    label_info.append(f"{key}: {value}")
+    
+            print(label_info)
+            label_text = "\n".join(label_info)
+            print(f"{label_text=}")
+            img_data["label_text"] = label_text
 
-        self.image_label.config(image=info["image"])
+
+    def set_img(self, img_data:dict):
+        self.img_data_label.config(text=img_data["label_text"], )
+
+        self.image_label.config(image=img_data["image"])
 
 
 
-    def autosize_img(self, file):# TODO Fix the auto-sizing
+    def scale_img(self, file):# TODO Fix the auto-sizing
         img = Image.open(file)
         return ImageOps.contain(img, (700, 700))
+
+    def autoscale_img(self, image):
+        master_width = self.image_label.winfo_width()
+        master_height = self.image_label.winfo_height()
+        return ImageOps.contain(image, (master_width, master_height))
 
 
     def run_app(self):
@@ -121,11 +132,11 @@ class SlideShow():
 
     def previous(self):
         print("clicked previous!")
-        self.img_idx = (self.img_idx - 1) % len(self.data)#TODO Make this smarter
-        self.configure_img_data(self.data[self.img_idx])
+        self.img_idx = (self.img_idx - 1) % len(self.data)
+        self.set_img(self.data[self.img_idx])
 
     def next(self):
         print("clicked next!")
-        self.img_idx = (self.img_idx + 1) % len(self.data)#TODO Make this smarter
-        self.configure_img_data(self.data[self.img_idx])
+        self.img_idx = (self.img_idx + 1) % len(self.data)
+        self.set_img(self.data[self.img_idx])
 
