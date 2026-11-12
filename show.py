@@ -28,6 +28,14 @@ def main():
                 data.append(img_info)
             else:
                 print(f"{entry.name} is not an image")
+        print("before sorting data...")
+        for e in data:
+            print(e)
+        data.sort(key=lambda x: x.get("file_name"))
+        print("after sorting data...")
+        for e in data:
+            print(e)
+        assert 0
         app = SlideShow(directory, data)
 
                 
