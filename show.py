@@ -10,12 +10,16 @@ def main():
 
     if len(sys.argv) > 2:#Get data from album
         # album_file = sys.argv[2]
-        album_file = r"animalPics\AnimalPics\Animals_album.json"
-        print("album: ", album_file)
-        with open(album_file, "r", encoding="utf-8") as f:
+        album = r"animalPics\AnimalPics\Animals_album.json"
+        print("album: ", album)
+        with open(album, "r", encoding="utf-8") as f:
             data = json.load(f)
+
+        print("got album data")
+        for img in data:
+            print(img)
         
-        app = SlideShow(album_file, data)#TODO Parse album name!
+        app = SlideShow(directory, data, album=album)#TODO Parse album name!
 
     else:#Get data from directory
         data = []
@@ -35,7 +39,6 @@ def main():
         print("after sorting data...")
         for e in data:
             print(e)
-        assert 0
         app = SlideShow(directory, data)
 
                 

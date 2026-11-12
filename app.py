@@ -3,13 +3,25 @@ from PIL import Image, ImageTk, ImageOps
 import os
 
 class SlideShow():
-    def __init__(self, album_name, images_data):
+    def __init__(self, directory, images_data, album=None):
+        self.directory = directory
         self.root = tk.Tk()
-        self.root.title(album_name)
+        if album:
+            self.album = album
+            #print(f"{album=}")
+            album_name = [c for c in os.path.basename(album)]
+            c = "c"
+            while c != ".":
+                c = album_name.pop()
+            self.album_name = "".join(album_name)
+            #print(f"{self.album_name=}")
+            self.root.title(self.album_name)
+        else:
+            self.root.title(directory)
         self.root.minsize(700, 700)
         self.root.maxsize(900, 900)
         self.root.geometry("700x700+25+50")
-        self.root.configure(bg='darkgray')
+        self.root.configure(bg='gray20')
         self.data = images_data
         self.load_images()
             
@@ -30,8 +42,7 @@ class SlideShow():
 
 
         self.img_data_frame = tk.Frame(
-            self.root,
-            background="blue")
+            self.root)
 
         self.img_data_label = tk.Label(
             self.img_data_frame,
@@ -46,7 +57,7 @@ class SlideShow():
 
         self.buttons_frame = tk.Frame(
             self.root,
-            background="darkgray")
+            background="gray20")
         
         self.button_width = 10
         
@@ -83,9 +94,21 @@ class SlideShow():
     def load_images(self):
         for img_data in self.data:
             if not img_data.get("image_path"):
-                img_data["image_path"] = os.path.relpath(img_data["file_name"])
+                #Build the image path
+                #print(f"Building a path for image: {img_data["file_name"]}")
+                dirpath = os.path.dirname(self.directory)
+                #print(f"{dirpath = }")
+                albpath = os.path.dirname(self.album)
+                #print(f"{albpath = }")
+                #print(f"{img_data["file_name"] = }")
+                img_data["image_path"] = os.path.join(
+                    albpath, img_data["file_name"]
+                    )
+                #print(f"{img_data["image_path"] = }")
 
             #Create tkinter Image
+            #print(f"creating tkinter image for {img_data["image_path"]=}")
+            #print(f"\t{img_data["image_path"]}")
             img_data["image"] = ImageTk.PhotoImage(
                     self.scale_img(img_data["image_path"])
                     )
@@ -98,9 +121,9 @@ class SlideShow():
                 if value:
                     label_info.append(f"{key}: {value}")
     
-            print(label_info)
+            #print(label_info)
             label_text = "\n".join(label_info)
-            print(f"{label_text=}")
+            #print(f"{label_text=}")
             img_data["label_text"] = label_text
 
 
