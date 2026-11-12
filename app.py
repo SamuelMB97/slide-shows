@@ -6,18 +6,8 @@ class SlideShow():
     def __init__(self, directory, images_data, album=None):
         self.directory = directory
         self.root = tk.Tk()
-        if album:
-            self.album = album
-            #print(f"{album=}")
-            album_name = [c for c in os.path.basename(album)]
-            c = "c"
-            while c != ".":
-                c = album_name.pop()
-            self.album_name = "".join(album_name)
-            #print(f"{self.album_name=}")
-            self.root.title(self.album_name)
-        else:
-            self.root.title(directory)
+        self.set_title(album, directory)
+
         self.root.minsize(700, 700)
         self.root.maxsize(900, 900)
         self.root.geometry("700x700+25+50")
@@ -26,6 +16,9 @@ class SlideShow():
         self.load_images()
             
         self.img_idx = 0
+        self.interval_ms = 3000
+        self.running = False
+        self.timer_id = None
 
 
         self.image_frame = tk.Frame(
@@ -67,21 +60,17 @@ class SlideShow():
             command=self.previous,
             width=self.button_width
             ).grid(row=0, column=0, padx=5, pady=5)
+
+
+        self.runstop_text = tk.StringVar(value="run")
         
         self.runstop_button = tk.Button(
             self.buttons_frame, 
-            text="run/stop", 
+            textvariable=self.runstop_text,
             command=self.toggle_run,
             width=self.button_width
             ).grid(row=0, column=1, padx=5, pady=5)
-        """
-        self.stop_button = tk.Button(
-            self.buttons_frame, 
-            text="stop", 
-            command=self.stop,
-            width=self.button_width
-            ).grid(row=0, column=1, padx=5, pady=5)#.pack(anchor="w")#
-        """
+        
         self.next_button = tk.Button(
             self.buttons_frame, 
             text="next", 
@@ -90,6 +79,24 @@ class SlideShow():
             ).grid(row=0, column=2, padx=5, pady=5)
 
         self.buttons_frame.pack(anchor="s")
+
+
+    def run_app(self):
+        self.root.mainloop()
+
+
+    def set_title(self, album, directory):
+        if album:
+            self.album = album
+            album_name = [c for c in os.path.basename(album)]
+            c = "c"
+            while c != ".":
+                c = album_name.pop()
+            self.album_name = "".join(album_name)
+
+            self.root.title(self.album_name)
+        else:
+            self.root.title(directory)
 
     def load_images(self):
         print("LOADING IMAGES")
@@ -102,7 +109,7 @@ class SlideShow():
                         album_path, img_data["file_name"]
                         )
 
-                print(f"\t{img_data["file_name"]=}\n\t{img_data["image_path"]=}\n")
+                #print(f"\t{img_data["file_name"]=}\n\t{img_data["image_path"]=}\n")
 
                 #Create tkinter Image
                 img_data["image"] = ImageTk.PhotoImage(
@@ -137,7 +144,6 @@ class SlideShow():
         self.image_label.config(image=img_data["image"])
 
 
-
     def scale_img(self, file):# TODO Fix the auto-sizing
         img = Image.open(file)
         return ImageOps.contain(img, (700, 700))
@@ -151,28 +157,54 @@ class SlideShow():
         return ImageOps.contain(img, (master_width, master_height))
 
 
-    def run_app(self):
-        self.root.mainloop()
-
     def toggle_run(self):
-        print("clicked run/stop!")
+        #print("run/stop!")
+        if self.running:
+            self.running = False
+            self.cancel()
+            self.runstop_text.set("run")
+        else: #Not Running
+            self.running = True
+            self.schedule_next()
+            self.runstop_text.set("stop")
 
-    def stop(self):
-        print("clicked stop!")
 
     def previous(self):
-        print("clicked previous!")
+        #print("previous!")
         try:
             self.img_idx = (self.img_idx - 1) % len(self.data)
             self.set_img(self.data[self.img_idx])
         except:
             print("Image failed to load")
+        self.restart_timer()
 
     def next(self):
-        print("clicked next!")
+        #print("next!")
         try:
             self.img_idx = (self.img_idx + 1) % len(self.data)
             self.set_img(self.data[self.img_idx])
         except:
             print("Image failed to load")
+        self.restart_timer()
 
+        
+    def auto_next(self):
+        self.timer_id = None
+        self.next()
+        if self.running:
+            self.schedule_next()
+
+    def schedule_next(self):
+        if self.timer_id:
+            self.root.after_cancel(self.timer_id)
+        self.timer_id = self.root.after(self.interval_ms, self.auto_next)
+
+    def cancel(self):
+        if self.timer_id is not None:
+            self.root.after_cancel(self.timer_id)
+            self.timer_id = None
+
+    def restart_timer(self):
+        self.cancel()
+        if self.running:
+            self.schedule_next()

@@ -4,6 +4,28 @@ import json
 import os
 
 
+
+def load_data(directory):
+    data = []
+    for entry in os.scandir(directory):
+        if entry.name.upper().endswith(("JPG", "JPEG", "PNG", "GIF")):
+            #print(f"{entry.name} is an image!")
+            img_info = {
+                "image_path": os.path.relpath(entry.path),
+                "file_name": entry.name}
+            data.append(img_info)
+        else:
+            pass#print(f"{entry.name} is not an image")
+
+    if len(data) == 0:
+        for entry in os.scandir(directory):
+            data = load_data(entry)
+            if len(data) > 0:
+                break
+    data.sort(key=lambda x: x.get("file_name"))
+    return data
+
+
 def main():
     directory = sys.argv[1]
     print("dir: ", directory)
@@ -16,31 +38,11 @@ def main():
             data = json.load(f)
 
         print("got album data")
-        """for img in data:
-            print(img)"""
         
         app = SlideShow(directory, data, album=album)
 
     else:#Get data from directory
-        data = []
-        for entry in os.scandir(directory):
-            if entry.name.upper().endswith(("JPG", "JPEG", "PNG", "GIF")):
-                print(f"{entry.name} is an image!")
-                img_info = {
-                    "image_path": os.path.relpath(entry.path),
-                    "file_name": entry.name}
-                data.append(img_info)
-            else:
-                print(f"{entry.name} is not an image")
-        data.sort(key=lambda x: x.get("file_name"))
-        app = SlideShow(directory, data)
-
-                
-    """print(f"data type={type(data)}")
-    print()
-    for e in data:
-        print(f"e type={type(e)}, {e=}")"""
-    print("Data from album file is ready")
+        app = SlideShow(directory, load_data(directory))
 
     app.run_app()
 
