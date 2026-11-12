@@ -16,7 +16,7 @@ class SlideShow():
         self.load_images()
             
         self.img_idx = 0
-        self.interval_ms = 3000
+        self.interval_ms = 1000
         self.running = False
         self.timer_id = None
 
