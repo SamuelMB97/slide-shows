@@ -24,11 +24,7 @@ def main():
                 print(f"{entry.name} is an image!")
                 img_info = {
                     "image_path": os.path.relpath(entry.path),
-                    "file_name": entry.name,
-                    "caption": None,
-                    "credit": None,
-                    "alt": None,
-                    "keywords": None}#TODO Get rid of extra data?
+                    "file_name": entry.name}
                 data.append(img_info)
             else:
                 print(f"{entry.name} is not an image")
