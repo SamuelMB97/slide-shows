@@ -16,10 +16,10 @@ def main():
             data = json.load(f)
 
         print("got album data")
-        for img in data:
-            print(img)
+        """for img in data:
+            print(img)"""
         
-        app = SlideShow(directory, data, album=album)#TODO Parse album name!
+        app = SlideShow(directory, data, album=album)
 
     else:#Get data from directory
         data = []
@@ -32,20 +32,14 @@ def main():
                 data.append(img_info)
             else:
                 print(f"{entry.name} is not an image")
-        print("before sorting data...")
-        for e in data:
-            print(e)
         data.sort(key=lambda x: x.get("file_name"))
-        print("after sorting data...")
-        for e in data:
-            print(e)
         app = SlideShow(directory, data)
 
                 
-    print(f"data type={type(data)}")
+    """print(f"data type={type(data)}")
     print()
     for e in data:
-        print(f"e type={type(e)}, {e=}")
+        print(f"e type={type(e)}, {e=}")"""
     print("Data from album file is ready")
 
     app.run_app()

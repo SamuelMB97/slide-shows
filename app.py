@@ -92,43 +92,43 @@ class SlideShow():
         self.buttons_frame.pack(anchor="s")
 
     def load_images(self):
+        print("LOADING IMAGES")
         for img_data in self.data:
-            if not img_data.get("image_path"):
-                #Build the image path
-                #print(f"Building a path for image: {img_data["file_name"]}")
-                dirpath = os.path.dirname(self.directory)
-                #print(f"{dirpath = }")
-                albpath = os.path.dirname(self.album)
-                #print(f"{albpath = }")
-                #print(f"{img_data["file_name"] = }")
-                img_data["image_path"] = os.path.join(
-                    albpath, img_data["file_name"]
-                    )
-                #print(f"{img_data["image_path"] = }")
+            try:
+                if not img_data.get("image_path"):
+                    #Build the image path
+                    album_path = os.path.dirname(self.album)
+                    img_data["image_path"] = os.path.join(
+                        album_path, img_data["file_name"]
+                        )
 
-            #Create tkinter Image
-            #print(f"creating tkinter image for {img_data["image_path"]=}")
-            #print(f"\t{img_data["image_path"]}")
-            img_data["image"] = ImageTk.PhotoImage(
-                    self.scale_img(img_data["image_path"])
-                    )
+                print(f"\t{img_data["file_name"]=}\n\t{img_data["image_path"]=}\n")
 
-            #Format image data for label
-            label_info = []
-            label_info.append(img_data.get("file_name"))
-            for key in ["caption", "credit", "alt", "keywords"]:
-                value = img_data.get(key)
-                if value:
-                    label_info.append(f"{key}: {value}")
-    
-            #print(label_info)
-            label_text = "\n".join(label_info)
-            #print(f"{label_text=}")
-            img_data["label_text"] = label_text
+                #Create tkinter Image
+                img_data["image"] = ImageTk.PhotoImage(
+                        self.scale_img(img_data["image_path"])
+                        )
+
+                #Format image data for label
+                label_info = []
+                label_info.append(img_data.get("file_name"))
+                for key in ["caption", "credit", "alt", "keywords"]:
+                    value = img_data.get(key)
+                    if value:
+                        label_info.append(f"{key}: {value}")
+        
+                label_text = "\n".join(label_info)
+                img_data["label_text"] = label_text
+            except:
+                print("IMAGE FAILED TO LOAD")
+                print(f"\tData:\n\t{img_data=}")
+                self.data.remove(img_data)
+        
+        print("DONE LOADING IMAGES")
 
 
     def set_img(self, img_data:dict):
-        self.img_data_label.config(text=img_data["label_text"], )
+        self.img_data_label.config(text=img_data["label_text"])
 
         self.image_label.config(image=img_data["image"])
 
@@ -155,11 +155,17 @@ class SlideShow():
 
     def previous(self):
         print("clicked previous!")
-        self.img_idx = (self.img_idx - 1) % len(self.data)
-        self.set_img(self.data[self.img_idx])
+        try:
+            self.img_idx = (self.img_idx - 1) % len(self.data)
+            self.set_img(self.data[self.img_idx])
+        except:
+            print("Image failed to load")
 
     def next(self):
         print("clicked next!")
-        self.img_idx = (self.img_idx + 1) % len(self.data)
-        self.set_img(self.data[self.img_idx])
+        try:
+            self.img_idx = (self.img_idx + 1) % len(self.data)
+            self.set_img(self.data[self.img_idx])
+        except:
+            print("Image failed to load")
 
