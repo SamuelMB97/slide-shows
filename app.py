@@ -130,6 +130,10 @@ class SlideShow():
     def set_img(self, img_data:dict):
         self.img_data_label.config(text=img_data["label_text"])
 
+        img_data["image"] = ImageTk.PhotoImage(
+            self.autoscale_img(img_data["image_path"])
+            )
+        
         self.image_label.config(image=img_data["image"])
 
 
@@ -138,10 +142,13 @@ class SlideShow():
         img = Image.open(file)
         return ImageOps.contain(img, (700, 700))
 
-    def autoscale_img(self, image):
-        master_width = self.image_label.winfo_width()
-        master_height = self.image_label.winfo_height()
-        return ImageOps.contain(image, (master_width, master_height))
+    def autoscale_img(self, file):
+        img = Image.open(file)
+        master_width = max(700, self.image_frame.winfo_width())
+        #print(f"{master_width = }")
+        master_height = max(700, self.image_frame.winfo_height())
+        #print(f"{master_height = }")
+        return ImageOps.contain(img, (master_width, master_height))
 
 
     def run_app(self):
